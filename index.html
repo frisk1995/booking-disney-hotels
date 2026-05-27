@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>東京ディズニーリゾート 予約URL生成ツール</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -34,7 +35,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 @media(max-width:520px){.hotel-grid{grid-template-columns:repeat(2,1fr)}}
 .hotel-btn{padding:.65rem .4rem;border:2px solid transparent;border-radius:8px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-size:.72rem;font-weight:500;text-align:center;transition:all .2s;background:#EDEAE3;color:#4A4A5A;line-height:1.4}
 .hotel-btn .hem{display:block;font-size:1.6rem;margin-bottom:.2rem}
-.hotel-btn .hcode{display:block;font-size:.62rem;opacity:.65;margin-top:.1rem}
+.hotel-btn .hcode{display:block;font-size:.62rem;opacity:.80;margin-top:.1rem}
 .hotel-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.1)}
 .hotel-btn.active{color:#fff;transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.18)}
 .sel-acts{display:flex;gap:.5rem;margin-bottom:.85rem}
@@ -106,6 +107,35 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
   .btn-copy,.btn-open{width:100%;text-align:center;padding:.62rem 1rem;font-size:.85rem}
   .gen-btn{font-size:1rem}
 }
+/* ── お気に入り ── */
+.fav-header{display:flex;align-items:center}
+.fav-collapse-btn{margin-left:auto;background:none;border:none;cursor:pointer;color:var(--muted);font-size:.78rem;padding:.15rem .4rem;border-radius:4px;font-family:'Noto Sans JP',sans-serif;transition:background .15s}
+.fav-collapse-btn:hover{background:var(--bg)}
+.fav-item{display:flex;align-items:center;gap:.6rem;padding:.55rem .3rem;border-bottom:1px solid var(--border)}
+.fav-item:last-child{border-bottom:none}
+.fav-item:hover{background:#F5F3EE;border-radius:6px}
+.fav-info{flex:1;min-width:0}
+.fav-name{font-size:.86rem;font-weight:500;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fav-meta{font-size:.71rem;color:var(--muted);margin-top:.1rem}
+.fav-acts{display:flex;gap:.4rem;flex-shrink:0}
+.btn-fav-load{padding:.3rem .65rem;font-size:.73rem;border-radius:5px;cursor:pointer;background:var(--navy);color:#fff;border:none;font-family:'Noto Sans JP',sans-serif;transition:background .15s}
+.btn-fav-load:hover{background:var(--navy2)}
+.btn-fav-del{padding:.3rem .5rem;font-size:.73rem;border-radius:5px;cursor:pointer;background:none;color:#B03030;border:1px solid #E8C0C0;font-family:'Noto Sans JP',sans-serif;transition:all .15s}
+.btn-fav-del:hover{background:#FEE;border-color:#C05050;color:#8B1A1A}
+.fav-save-area{margin-bottom:1rem}
+.btn-fav-save{width:100%;padding:.75rem;background:linear-gradient(135deg,#8B6914 0%,var(--gold) 100%);color:#fff;border:none;border-radius:var(--radius);font-family:'EB Garamond',serif;font-size:1.05rem;font-weight:600;letter-spacing:.05em;cursor:pointer;transition:all .2s;box-shadow:0 2px 10px rgba(184,146,42,.22)}
+.btn-fav-save:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(184,146,42,.35)}
+.fav-save-form{background:#FDFCF9;border:1px solid var(--border);border-radius:8px;padding:.85rem;margin-top:.5rem;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+.fav-name-input{flex:1;min-width:160px;padding:.5rem .75rem;border:1.5px solid var(--border);border-radius:7px;font-family:'Noto Sans JP',sans-serif;font-size:.9rem;color:var(--text);outline:none}
+.fav-name-input:focus{border-color:var(--navy)}
+.fav-name-input:focus-visible{border-color:var(--navy);box-shadow:0 0 0 3px rgba(27,43,75,.15)}
+.btn-fav-confirm{padding:.5rem 1rem;background:var(--gold);color:#fff;border:none;border-radius:7px;font-family:'Noto Sans JP',sans-serif;font-size:.83rem;font-weight:500;cursor:pointer;white-space:nowrap;transition:background .15s}
+.btn-fav-confirm:hover{background:#9A7820}
+@media(max-width:520px){
+  .fav-save-form{flex-direction:column;align-items:stretch}
+  .fav-name-input{min-width:0}
+  .btn-fav-confirm{text-align:center}
+}
 </style>
 </head>
 <body>
@@ -115,15 +145,22 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 </header>
 <div class="container">
 
+  <div class="card" id="fav-card" style="display:none">
+    <div class="card-title fav-header">お気に入り
+      <button class="fav-collapse-btn" id="fav-collapse-btn" aria-expanded="true" onclick="toggleFavCollapse()">▲ 折りたたむ</button>
+    </div>
+    <div id="fav-list"></div>
+  </div>
+
   <div class="card">
     <div class="card-title">検索条件</div>
     <div class="cond-grid">
       <div class="field">
-        <label>チェックイン日</label>
+        <label for="checkin-date">チェックイン日</label>
         <input type="date" id="checkin-date">
       </div>
       <div class="field">
-        <label>泊数</label>
+        <label for="nights">泊数</label>
         <select id="nights">
           <option value="1">1泊</option><option value="2">2泊</option><option value="3">3泊</option>
           <option value="4">4泊</option><option value="5">5泊</option><option value="6">6泊</option>
@@ -133,7 +170,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
         </select>
       </div>
       <div class="field">
-        <label>大人人数</label>
+        <label for="adults">大人人数</label>
         <select id="adults">
           <option value="1">1名</option><option value="2" selected>2名</option>
           <option value="3">3名</option><option value="4">4名</option>
@@ -165,6 +202,17 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
   </div>
 
   <button class="gen-btn" onclick="generateUrls()">予約URLを生成する →</button>
+
+  <div class="card" style="padding:1rem 1.4rem">
+    <button class="btn-fav-save" onclick="toggleFavForm()">★ お気に入りに保存</button>
+    <div class="fav-save-form" id="fav-save-form" style="display:none">
+      <label for="fav-name-input" style="font-size:.75rem;color:var(--muted);display:block;margin-bottom:.3rem">お気に入り名</label>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center">
+        <input class="fav-name-input" type="text" id="fav-name-input" placeholder="例: FSH 2026-09-27 2泊">
+        <button class="btn-fav-confirm" onclick="saveFavorite(document.getElementById('fav-name-input').value)">保存する</button>
+      </div>
+    </div>
+  </div>
 
   <div class="card" id="results-card" style="display:none">
     <div class="card-title">生成された予約URL</div>
@@ -409,6 +457,7 @@ function init() {
   document.getElementById('checkin-date').value = ds;
   updateCountdown();
   document.getElementById('checkin-date').addEventListener('change', updateCountdown);
+  renderFavorites();
 }
 
 function renderTabs() {
@@ -422,7 +471,7 @@ function renderTabs() {
 }
 
 function selectHotel(i) {
-  if (i !== selIdx && selCodes.size > 0) {
+  if (i !== selIdx && (selCodes.size > 0 || nullCodeMap.size > 0)) {
     if (!confirm('ホテルを変更すると部屋の選択がリセットされます。続けますか？')) return;
   }
   selIdx = i;
@@ -602,7 +651,7 @@ function generateUrls() {
       <div class="url-text">${escH(url)}</div>
       <div class="url-acts">
         <button class="btn-copy" id="cb_${i}" onclick="cpUrl(${i})">コピー</button>
-        <button class="btn-open" onclick="window.open(urls[${i}],'_blank')">予約ページを開く →</button>
+        <button class="btn-open" onclick="window.open(urls[${i}],'_blank','noopener,noreferrer')">予約ページを開く →</button>
       </div></div>`;
   }).join('');
 
@@ -621,11 +670,133 @@ function cpUrl(i) {
     const btn = document.getElementById(`cb_${i}`);
     btn.textContent = 'コピー済！'; btn.classList.add('copied');
     setTimeout(() => { btn.textContent='コピー'; btn.classList.remove('copied'); }, 1800);
+  }).catch(() => {
+    const btn = document.getElementById(`cb_${i}`);
+    btn.textContent = 'コピー失敗';
+    setTimeout(() => { btn.textContent = 'コピー'; }, 2000);
   });
 }
 
 function escH(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ── お気に入り ── */
+const FAV_KEY = 'tdr_favorites';
+const FAV_MAX = 30;
+let favCollapsed = false;
+
+function loadFavoritesFromStorage() {
+  try { return JSON.parse(localStorage.getItem(FAV_KEY) || '[]'); } catch { return []; }
+}
+function saveFavoritesToStorage(favs) {
+  localStorage.setItem(FAV_KEY, JSON.stringify(favs));
+}
+
+function renderFavorites() {
+  const favs = loadFavoritesFromStorage();
+  const card = document.getElementById('fav-card');
+  const list = document.getElementById('fav-list');
+  if (favs.length === 0) { card.style.display = 'none'; return; }
+  card.style.display = '';
+  if (favCollapsed) { list.style.display = 'none'; return; }
+  list.style.display = '';
+  list.innerHTML = favs.map(f => {
+    const h = HOTELS[f.hotelIdx];
+    const hname = h ? `${h.emoji} ${h.code}` : '?';
+    const dateStr = f.checkinDate ? f.checkinDate.replace(/-/g,'/') : '日付未設定';
+    const roomCount = (f.roomCodes || []).length;
+    const roomStr = roomCount === 0 ? '全部屋' : `${roomCount}部屋`;
+    return `<div class="fav-item">
+      <div class="fav-info">
+        <div class="fav-name">★ ${escH(f.name)}</div>
+        <div class="fav-meta">${escH(hname)} / ${escH(dateStr)} / ${escH(String(f.nights))}泊 / 大人${escH(String(f.adults))}名 / ${escH(roomStr)}</div>
+      </div>
+      <div class="fav-acts">
+        <button class="btn-fav-load" onclick="loadFavorite('${escH(f.id)}')">読み込む</button>
+        <button class="btn-fav-del" onclick="deleteFavorite('${escH(f.id)}')">削除</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleFavCollapse() {
+  favCollapsed = !favCollapsed;
+  const btn = document.getElementById('fav-collapse-btn');
+  btn.setAttribute('aria-expanded', String(!favCollapsed));
+  btn.textContent = favCollapsed ? '▼ 展開する' : '▲ 折りたたむ';
+  renderFavorites();
+}
+
+function toggleFavForm() {
+  const form = document.getElementById('fav-save-form');
+  const visible = form.style.display !== 'none';
+  form.style.display = visible ? 'none' : '';
+  if (!visible) {
+    const inp = document.getElementById('fav-name-input');
+    inp.value = getDefaultFavName();
+    inp.focus();
+  }
+}
+
+function getDefaultFavName() {
+  const h = HOTELS[selIdx];
+  const ds = document.getElementById('checkin-date').value || '';
+  const nights = document.getElementById('nights').value;
+  return `${h.code} ${ds || '日付未設定'} ${nights}泊`;
+}
+
+function saveFavorite(name) {
+  const trimmed = (name || '').trim() || getDefaultFavName();
+  const favs = loadFavoritesFromStorage();
+  if (favs.length >= FAV_MAX) {
+    const minId = favs.reduce((a, b) => Number(a.id) < Number(b.id) ? a : b).id;
+    const idx = favs.findIndex(f => f.id === minId);
+    if (idx !== -1) favs.splice(idx, 1);
+  }
+  favs.push({
+    id: Date.now().toString(),
+    name: trimmed,
+    savedAt: new Date().toISOString(),
+    hotelIdx: selIdx,
+    checkinDate: document.getElementById('checkin-date').value,
+    nights: Number(document.getElementById('nights').value),
+    adults: Number(document.getElementById('adults').value),
+    roomCodes: [...selCodes],
+    nullCodes: Object.fromEntries(nullCodeMap),
+  });
+  saveFavoritesToStorage(favs);
+  document.getElementById('fav-save-form').style.display = 'none';
+  favCollapsed = false;
+  document.getElementById('fav-collapse-btn').textContent = '▲ 折りたたむ';
+  renderFavorites();
+  document.getElementById('fav-card').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function loadFavorite(id) {
+  const fav = loadFavoritesFromStorage().find(f => f.id === id);
+  if (!fav) return;
+  if (fav.hotelIdx >= HOTELS.length) {
+    alert('このお気に入りで選択したホテルは現在利用できません');
+    return;
+  }
+  selIdx = fav.hotelIdx;
+  selCatIdx = 0;
+  selCodes = new Set(fav.roomCodes || []);
+  nullCodeMap = fav.nullCodes ? new Map(Object.entries(fav.nullCodes)) : new Map();
+  document.getElementById('checkin-date').value = fav.checkinDate || '';
+  document.getElementById('nights').value = fav.nights;
+  document.getElementById('adults').value = fav.adults;
+  renderTabs();
+  renderRooms();
+  updateCountdown();
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function deleteFavorite(id) {
+  const favs = loadFavoritesFromStorage().filter(f => f.id !== id);
+  saveFavoritesToStorage(favs);
+  renderFavorites();
 }
 
 init();
