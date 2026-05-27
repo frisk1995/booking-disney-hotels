@@ -12,27 +12,27 @@
   --bg:#F7F5F0;--card:#fff;--border:#E2DDD4;
   --navy:#1B2B4B;--navy2:#2D4470;
   --gold:#B8922A;--gold-lt:#F0E0B0;
-  --text:#1A1A2E;--muted:#6B6B7B;
+  --text:#1A1A2E;--muted:#5C5C6B;
   --ok:#2D7D46;--radius:10px;
   --shadow:0 2px 12px rgba(27,43,75,.08);
 }
 body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
-.site-header{background:linear-gradient(135deg,#1B2B4B 0%,#2D4470 60%,#1B2B4B 100%);color:#fff;padding:2rem 1.5rem;text-align:center;position:relative;overflow:hidden}
-.site-header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 120%,rgba(185,146,42,.18) 0%,transparent 65%);pointer-events:none}
+.site-header{background:linear-gradient(135deg,#121E35 0%,#1B2B4B 35%,#243760 65%,#1B2B4B 100%);color:#fff;padding:2rem 1.5rem;text-align:center;position:relative;overflow:hidden}
+.site-header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 130%,rgba(185,146,42,.30) 0%,transparent 60%);pointer-events:none}
 .site-header h1{font-family:'EB Garamond',serif;font-size:1.9rem;font-weight:600;letter-spacing:.06em;color:var(--gold-lt);position:relative}
-.site-header p{font-size:.82rem;color:rgba(255,255,255,.65);margin-top:.4rem;position:relative}
+.site-header p{font-size:.82rem;color:rgba(255,255,255,.75);margin-top:.4rem;position:relative}
 .container{max-width:860px;margin:0 auto;padding:1.4rem 1rem 3rem}
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.4rem;box-shadow:var(--shadow);margin-bottom:1.2rem}
+.card{background:linear-gradient(180deg,#fff 0%,#FDFCF9 100%);border:1px solid;border-color:#EAE5DC #E2DDD4 #D8D2C7 #E2DDD4;border-radius:var(--radius);padding:1.4rem;box-shadow:var(--shadow);margin-bottom:1.2rem}
 .card-title{font-family:'EB Garamond',serif;font-size:1.15rem;font-weight:600;color:var(--navy);margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
 .card-title::before{content:'';display:inline-block;width:3px;height:1.1em;background:var(--gold);border-radius:2px;flex-shrink:0}
 .cond-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
-@media(max-width:560px){.cond-grid{grid-template-columns:1fr}}
+@media(max-width:520px){.cond-grid{grid-template-columns:1fr}}
 .field label{display:block;font-size:.72rem;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.35rem}
 .field input,.field select{width:100%;padding:.6rem .8rem;border:1.5px solid var(--border);border-radius:7px;font-family:'Noto Sans JP',sans-serif;font-size:1rem;color:var(--text);background:#fff;outline:none;transition:border-color .2s}
 .field input:focus,.field select:focus{border-color:var(--navy)}
 .hotel-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.55rem}
-@media(max-width:480px){.hotel-grid{grid-template-columns:repeat(2,1fr)}}
-.hotel-btn{padding:.65rem .4rem;border:2px solid transparent;border-radius:8px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-size:.72rem;font-weight:500;text-align:center;transition:all .2s;background:#EDEAE3;color:var(--muted);line-height:1.4}
+@media(max-width:520px){.hotel-grid{grid-template-columns:repeat(2,1fr)}}
+.hotel-btn{padding:.65rem .4rem;border:2px solid transparent;border-radius:8px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-size:.72rem;font-weight:500;text-align:center;transition:all .2s;background:#EDEAE3;color:#4A4A5A;line-height:1.4}
 .hotel-btn .hem{display:block;font-size:1.6rem;margin-bottom:.2rem}
 .hotel-btn .hcode{display:block;font-size:.62rem;opacity:.65;margin-top:.1rem}
 .hotel-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.1)}
@@ -42,11 +42,11 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 .btn-sm:hover{background:var(--navy);color:#fff;border-color:var(--navy)}
 .cat-title{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:.3rem 0;border-bottom:1px solid var(--border);margin:.8rem 0 .4rem}
 .cat-title:first-child{margin-top:0}
-.room-item{display:flex;align-items:center;gap:.7rem;padding:.45rem .4rem;border-radius:6px;cursor:pointer;transition:background .12s}
+.room-item{display:flex;align-items:center;gap:.7rem;padding:.5rem .6rem;border-radius:6px;cursor:pointer;transition:background .12s}
 .room-item:hover{background:#F5F3EE}
 .room-item input[type=checkbox]{width:15px;height:15px;flex-shrink:0;accent-color:var(--navy);cursor:pointer}
 .room-item label{font-size:.84rem;cursor:pointer;flex:1}
-.room-item .rcode{font-size:.6rem;color:var(--muted);font-family:monospace;background:#F0EEE8;padding:.1rem .28rem;border-radius:3px;white-space:nowrap;flex-shrink:0}
+.room-item .rcode{font-size:.65rem;color:var(--muted);font-family:monospace;background:#F0EEE8;padding:.1rem .28rem;border-radius:3px;white-space:nowrap;flex-shrink:0}
 .null-input{font-size:.8rem;padding:.3rem .5rem;border:1px solid var(--border);border-radius:5px;font-family:'Noto Sans JP',sans-serif;width:200px;margin-left:auto;flex-shrink:0}
 .cd-inner{text-align:center}
 .cd-date{font-family:'EB Garamond',serif;font-size:1.55rem;color:var(--navy);margin-bottom:.25rem}
@@ -60,9 +60,10 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 .cd-soon .cd-val{color:#B85A00}
 .gen-btn{width:100%;padding:.9rem;background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);color:#fff;border:none;border-radius:var(--radius);font-family:'EB Garamond',serif;font-size:1.1rem;font-weight:600;letter-spacing:.05em;cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(27,43,75,.25);margin-bottom:1.2rem}
 .gen-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(27,43,75,.32)}
+.gen-btn:active{transform:translateY(0);box-shadow:0 2px 8px rgba(27,43,75,.2)}
 .url-result{margin-bottom:.8rem;padding:1rem;background:#F8F6F1;border:1px solid var(--border);border-radius:8px}
 .url-rname{font-size:.84rem;font-weight:500;color:var(--navy);margin-bottom:.45rem}
-.url-text{font-size:.63rem;color:var(--muted);font-family:monospace;word-break:break-all;margin-bottom:.55rem;background:#fff;padding:.45rem .55rem;border-radius:5px;border:1px solid var(--border)}
+.url-text{font-size:.72rem;color:var(--muted);font-family:monospace;word-break:break-all;margin-bottom:.55rem;background:#fff;padding:.45rem .55rem;border-radius:5px;border:1px solid var(--border)}
 .url-acts{display:flex;gap:.5rem;flex-wrap:wrap}
 .btn-copy,.btn-open{padding:.38rem .78rem;font-size:.78rem;border-radius:5px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;transition:all .15s;border:1.5px solid}
 .btn-copy{background:#fff;border-color:var(--border);color:var(--muted)}
@@ -76,8 +77,10 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 .cat-tab{padding:.32rem .75rem;font-size:.74rem;border:1.5px solid var(--border);border-radius:20px;cursor:pointer;background:#fff;color:var(--muted);font-family:'Noto Sans JP',sans-serif;transition:all .15s;white-space:nowrap;display:inline-flex;align-items:center;gap:.3rem}
 .cat-tab:hover{border-color:var(--navy);color:var(--navy)}
 .cat-tab.active{background:var(--navy);border-color:var(--navy);color:#fff}
-.cat-badge{display:inline-block;background:var(--gold);color:#fff;border-radius:10px;font-size:.58rem;padding:.05rem .35rem;font-weight:700;line-height:1.4}
-.cat-tab.active .cat-badge{background:rgba(255,255,255,.3)}
+.cat-badge{display:inline-block;background:var(--gold-lt);color:var(--navy);border:1px solid var(--gold);border-radius:10px;font-size:.58rem;padding:.05rem .35rem;font-weight:700;line-height:1.4}
+.cat-tab.active .cat-badge{background:rgba(255,255,255,.9);border-color:rgba(255,255,255,.4)}
+.field input:focus-visible,.field select:focus-visible{border-color:var(--navy);box-shadow:0 0 0 3px rgba(27,43,75,.15)}
+.hotel-btn:focus-visible,.cat-tab:focus-visible,.btn-sm:focus-visible,.btn-copy:focus-visible,.btn-open:focus-visible,.gen-btn:focus-visible{outline:2.5px solid var(--gold);outline-offset:2px}
 @media(max-width:520px){
   .container{padding:1rem .7rem 2.5rem}
   .card{padding:1rem .85rem}
@@ -87,7 +90,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
   .hotel-btn{padding:.6rem .3rem}
   .cat-tabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:.6rem;margin-bottom:.7rem}
   .cat-tabs::-webkit-scrollbar{display:none}
-  .room-item{padding:.6rem .2rem}
+  .room-item{padding:.6rem .4rem}
   .room-item input[type=checkbox]{width:18px;height:18px}
   .room-item label{font-size:.86rem}
   .room-item .rcode{display:none}
@@ -148,7 +151,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
   <div class="card">
     <div class="card-title">部屋選択</div>
     <div class="sel-acts">
-      <button class="btn-sm" onclick="selectAll()">全選択</button>
+      <button class="btn-sm" onclick="selectAll()">全部屋を選択</button>
       <button class="btn-sm" onclick="clearAll()">全解除</button>
     </div>
     <div id="room-list"><p class="msg">ホテルを選択してください</p></div>
@@ -394,6 +397,7 @@ const HOTELS = [
 let selIdx = 0;
 let selCatIdx = 0;
 let selCodes = new Set();
+let nullCodeMap = new Map();
 let cdTimer = null;
 
 function init() {
@@ -418,9 +422,13 @@ function renderTabs() {
 }
 
 function selectHotel(i) {
+  if (i !== selIdx && selCodes.size > 0) {
+    if (!confirm('ホテルを変更すると部屋の選択がリセットされます。続けますか？')) return;
+  }
   selIdx = i;
   selCatIdx = 0;
   selCodes = new Set();
+  nullCodeMap = new Map();
   renderTabs();
   renderRooms();
 }
@@ -453,14 +461,27 @@ function renderRooms() {
         <label for="${id}">${r.n}${bt}${tp}</label>
         <span class="rcode">${r.c}</span></div>`;
     } else {
+      const saved = nullCodeMap.get(id);
+      const savedCode = saved ? saved.code.replace(/"/g,'&quot;') : '';
       html += `<div class="room-item">
-        <input type="checkbox" id="${id}" data-code="" data-name="${nm}">
+        <input type="checkbox" id="${id}" data-code="${savedCode}" data-name="${nm}"${saved?' checked':''}>
         <label for="${id}">${r.n}${bt}${tp}</label>
-        <input class="null-input" type="text" placeholder="部屋コードを入力" oninput="document.getElementById('${id}').dataset.code=this.value.trim()">
+        <input class="null-input" type="text" placeholder="部屋コードを入力" value="${savedCode}" oninput="onNullInput(this,'${id}')">
         </div>`;
     }
   });
   document.getElementById('room-list').innerHTML = html;
+}
+
+function onNullInput(inputEl, id) {
+  const code = inputEl.value.trim();
+  const cb = document.getElementById(id);
+  if (cb) {
+    cb.dataset.code = code;
+    cb.checked = !!code;
+  }
+  if (code && cb) nullCodeMap.set(id, {code, name: cb.dataset.name});
+  else nullCodeMap.delete(id);
 }
 
 function toggleRoom(cb) {
@@ -485,17 +506,18 @@ function updateCatBadges() {
 }
 
 function selectAll() {
+  const h = HOTELS[selIdx];
+  h.cats.forEach(cat => cat.rooms.forEach(r => { if (r.c) selCodes.add(r.c); }));
   document.querySelectorAll('#room-list input[type=checkbox]').forEach(c => {
-    c.checked = true;
-    if (c.dataset.code) selCodes.add(c.dataset.code);
+    if (c.dataset.code) c.checked = true;
   });
   updateCatBadges();
 }
 function clearAll() {
-  document.querySelectorAll('#room-list input[type=checkbox]').forEach(c => {
-    c.checked = false;
-    if (c.dataset.code) selCodes.delete(c.dataset.code);
-  });
+  selCodes = new Set();
+  nullCodeMap = new Map();
+  document.querySelectorAll('#room-list input[type=checkbox]').forEach(c => { c.checked = false; });
+  document.querySelectorAll('#room-list .null-input').forEach(inp => { inp.value = ''; });
   updateCatBadges();
 }
 
@@ -568,12 +590,10 @@ function generateUrls() {
   const allRooms = hotel.cats.flatMap(cat => cat.rooms);
   const codeEntries = allRooms.filter(r => r.c && selCodes.has(r.c))
     .map(r => ({label: r.n, code: r.c, name: r.n}));
-  const domNullEntries = [...document.querySelectorAll('#room-list input[type=checkbox]:checked')]
-    .filter(cb => cb.dataset.code && !selCodes.has(cb.dataset.code))
-    .map(cb => ({label: cb.dataset.name, code: cb.dataset.code, name: cb.dataset.name}));
-  const entries = (codeEntries.length + domNullEntries.length) === 0
+  const nullEntries = [...nullCodeMap.values()].map(e => ({label: e.name, code: e.code, name: e.name}));
+  const entries = (codeEntries.length + nullEntries.length) === 0
     ? [{label:`${hotel.name}（全部屋表示）`, code:'', name:''}]
-    : [...codeEntries, ...domNullEntries];
+    : [...codeEntries, ...nullEntries];
 
   out.innerHTML = entries.map((e,i) => {
     const url = buildUrl(hotel.code, useDate, nights, adults, e.code, e.name);
@@ -585,6 +605,11 @@ function generateUrls() {
         <button class="btn-open" onclick="window.open(urls[${i}],'_blank')">予約ページを開く →</button>
       </div></div>`;
   }).join('');
+
+  if (entries.length === 1 && entries[0].code === '') {
+    out.insertAdjacentHTML('afterbegin',
+      '<p style="font-size:.8rem;color:var(--muted);margin-bottom:.8rem">※ 部屋未選択のため全部屋リスト表示URLを生成しています</p>');
+  }
 
   window.urls = entries.map(e => buildUrl(hotel.code, useDate, nights, adults, e.code, e.name));
   card.style.display = 'block';
