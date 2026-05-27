@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>東京ディズニーリゾート 予約URL生成ツール</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F7F5F0;--card:#fff;--border:#E2DDD4;
+  --navy:#1B2B4B;--navy2:#2D4470;
+  --gold:#B8922A;--gold-lt:#F0E0B0;
+  --text:#1A1A2E;--muted:#6B6B7B;
+  --ok:#2D7D46;--radius:10px;
+  --shadow:0 2px 12px rgba(27,43,75,.08);
+}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+.site-header{background:linear-gradient(135deg,#1B2B4B 0%,#2D4470 60%,#1B2B4B 100%);color:#fff;padding:2rem 1.5rem;text-align:center;position:relative;overflow:hidden}
+.site-header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 120%,rgba(185,146,42,.18) 0%,transparent 65%);pointer-events:none}
+.site-header h1{font-family:'EB Garamond',serif;font-size:1.9rem;font-weight:600;letter-spacing:.06em;color:var(--gold-lt);position:relative}
+.site-header p{font-size:.82rem;color:rgba(255,255,255,.65);margin-top:.4rem;position:relative}
+.container{max-width:860px;margin:0 auto;padding:1.4rem 1rem 3rem}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1.4rem;box-shadow:var(--shadow);margin-bottom:1.2rem}
+.card-title{font-family:'EB Garamond',serif;font-size:1.15rem;font-weight:600;color:var(--navy);margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+.card-title::before{content:'';display:inline-block;width:3px;height:1.1em;background:var(--gold);border-radius:2px;flex-shrink:0}
+.cond-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
+@media(max-width:560px){.cond-grid{grid-template-columns:1fr}}
+.field label{display:block;font-size:.72rem;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.35rem}
+.field input,.field select{width:100%;padding:.6rem .8rem;border:1.5px solid var(--border);border-radius:7px;font-family:'Noto Sans JP',sans-serif;font-size:.95rem;color:var(--text);background:#fff;outline:none;transition:border-color .2s}
+.field input:focus,.field select:focus{border-color:var(--navy)}
+.hotel-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.55rem}
+@media(max-width:480px){.hotel-grid{grid-template-columns:repeat(2,1fr)}}
+.hotel-btn{padding:.65rem .4rem;border:2px solid transparent;border-radius:8px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;font-size:.72rem;font-weight:500;text-align:center;transition:all .2s;background:#EDEAE3;color:var(--muted);line-height:1.4}
+.hotel-btn .hem{display:block;font-size:1.6rem;margin-bottom:.2rem}
+.hotel-btn .hcode{display:block;font-size:.62rem;opacity:.65;margin-top:.1rem}
+.hotel-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.1)}
+.hotel-btn.active{color:#fff;transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,0,0,.18)}
+.sel-acts{display:flex;gap:.5rem;margin-bottom:.85rem}
+.btn-sm{padding:.28rem .7rem;font-size:.73rem;border:1px solid var(--border);border-radius:5px;cursor:pointer;background:#fff;color:var(--muted);font-family:'Noto Sans JP',sans-serif;transition:all .15s}
+.btn-sm:hover{background:var(--navy);color:#fff;border-color:var(--navy)}
+.cat-title{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);padding:.3rem 0;border-bottom:1px solid var(--border);margin:.8rem 0 .4rem}
+.cat-title:first-child{margin-top:0}
+.room-item{display:flex;align-items:center;gap:.7rem;padding:.45rem .4rem;border-radius:6px;cursor:pointer;transition:background .12s}
+.room-item:hover{background:#F5F3EE}
+.room-item input[type=checkbox]{width:15px;height:15px;flex-shrink:0;accent-color:var(--navy);cursor:pointer}
+.room-item label{font-size:.84rem;cursor:pointer;flex:1}
+.room-item .rcode{font-size:.6rem;color:var(--muted);font-family:monospace;background:#F0EEE8;padding:.1rem .28rem;border-radius:3px;white-space:nowrap;flex-shrink:0}
+.null-input{font-size:.8rem;padding:.3rem .5rem;border:1px solid var(--border);border-radius:5px;font-family:'Noto Sans JP',sans-serif;width:200px;margin-left:auto;flex-shrink:0}
+.cd-inner{text-align:center}
+.cd-date{font-family:'EB Garamond',serif;font-size:1.55rem;color:var(--navy);margin-bottom:.25rem}
+.cd-tip{font-size:.77rem;color:var(--muted);margin-bottom:1rem}
+.cd-units{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;align-items:flex-end}
+.cd-unit{text-align:center;min-width:55px}
+.cd-val{font-family:'EB Garamond',serif;font-size:2.6rem;font-weight:600;color:var(--navy);line-height:1;display:block}
+.cd-lbl{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.cd-sep{font-family:'EB Garamond',serif;font-size:2rem;color:var(--border);padding-bottom:.4rem}
+.cd-unlocked{font-family:'EB Garamond',serif;font-size:1.35rem;color:var(--ok);padding:1rem}
+.cd-soon .cd-val{color:#B85A00}
+.gen-btn{width:100%;padding:.9rem;background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);color:#fff;border:none;border-radius:var(--radius);font-family:'EB Garamond',serif;font-size:1.1rem;font-weight:600;letter-spacing:.05em;cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(27,43,75,.25);margin-bottom:1.2rem}
+.gen-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(27,43,75,.32)}
+.url-result{margin-bottom:.8rem;padding:1rem;background:#F8F6F1;border:1px solid var(--border);border-radius:8px}
+.url-rname{font-size:.84rem;font-weight:500;color:var(--navy);margin-bottom:.45rem}
+.url-text{font-size:.63rem;color:var(--muted);font-family:monospace;word-break:break-all;margin-bottom:.55rem;background:#fff;padding:.45rem .55rem;border-radius:5px;border:1px solid var(--border)}
+.url-acts{display:flex;gap:.5rem;flex-wrap:wrap}
+.btn-copy,.btn-open{padding:.38rem .78rem;font-size:.78rem;border-radius:5px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;transition:all .15s;border:1.5px solid}
+.btn-copy{background:#fff;border-color:var(--border);color:var(--muted)}
+.btn-copy.copied,.btn-copy:hover{background:var(--gold);border-color:var(--gold);color:#fff}
+.btn-open{background:var(--navy);border-color:var(--navy);color:#fff}
+.btn-open:hover{background:var(--navy2);border-color:var(--navy2)}
+.msg{text-align:center;color:var(--muted);font-size:.88rem;padding:1.8rem}
+.tag-battle{display:inline-block;font-size:.58rem;background:#FDE8D8;color:#B85A00;border:1px solid #F5C6A0;border-radius:3px;padding:.05rem .28rem;margin-left:.3rem;vertical-align:middle;font-weight:700}
+.tag-top{display:inline-block;font-size:.58rem;background:#D8EAF8;color:#1A5276;border:1px solid #A9CCE3;border-radius:3px;padding:.05rem .28rem;margin-left:.3rem;vertical-align:middle;font-weight:700}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <h1>東京ディズニーリゾート<br>予約URL生成ツール</h1>
+  <p>ホテル・部屋タイプを選択して公式予約サイトへのリンクを生成</p>
+</header>
+<div class="container">
+
+  <div class="card">
+    <div class="card-title">検索条件</div>
+    <div class="cond-grid">
+      <div class="field">
+        <label>チェックイン日</label>
+        <input type="date" id="checkin-date">
+      </div>
+      <div class="field">
+        <label>泊数</label>
+        <select id="nights">
+          <option value="1">1泊</option><option value="2">2泊</option><option value="3">3泊</option>
+          <option value="4">4泊</option><option value="5">5泊</option><option value="6">6泊</option>
+          <option value="7">7泊</option><option value="8">8泊</option><option value="9">9泊</option>
+          <option value="10">10泊</option><option value="11">11泊</option><option value="12">12泊</option>
+          <option value="13">13泊</option><option value="14">14泊</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>大人人数</label>
+        <select id="adults">
+          <option value="1">1名</option><option value="2" selected>2名</option>
+          <option value="3">3名</option><option value="4">4名</option>
+          <option value="5">5名</option><option value="6">6名</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">ホテル選択</div>
+    <div class="hotel-grid" id="hotel-tabs"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">部屋選択</div>
+    <div class="sel-acts">
+      <button class="btn-sm" onclick="selectAll()">全選択</button>
+      <button class="btn-sm" onclick="clearAll()">全解除</button>
+    </div>
+    <div id="room-list"><p class="msg">ホテルを選択してください</p></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">予約解禁カウントダウン</div>
+    <div class="cd-inner" id="countdown-inner">
+      <p class="msg">チェックイン日を入力してください</p>
+    </div>
+  </div>
+
+  <button class="gen-btn" onclick="generateUrls()">予約URLを生成する →</button>
+
+  <div class="card" id="results-card" style="display:none">
+    <div class="card-title">生成された予約URL</div>
+    <div id="url-results"></div>
+  </div>
+</div>
+
+<script>
+const HOTELS = [
+  {
+    code:'FSH', short:'ファンタジー\nスプリングス', emoji:'🏰', color:'#6B4DAB',
+    name:'ファンタジースプリングスホテル',
+    cats:[
+      { name:'グランドシャトー', rooms:[
+        {n:'グランドシャトー アルコーヴルーム（４、５、７階）',c:'HOFSHGMS0001N'},
+        {n:'グランドシャトー アルコーヴルーム（４‐７階）',c:'HOFSHGMA0001N'},
+        {n:'グランドシャトー アルコーヴルーム（８‐９階）',c:'HOFSHGUA0001N'},
+        {n:'グランドシャトー テラス＆アルコーヴルーム（３、５階）',c:'HOFSHGTA0001N'},
+        {n:'グランドシャトー テラス＆アルコーヴルーム（３‐４階）',c:'HOFSHGTB0001N'},
+        {n:'グランドシャトー テラスルーム（５‐７階）',c:'HOFSHGTT0001N'},
+        {n:'グランドシャトー グランドルーム（５‐６階）',c:'HOFSHGMG0001N'},
+        {n:'グランドシャトー グランドルーム（９階）',c:'HOFSHGUG0001N'},
+        {n:'グランドシャトー グランド・テラスルーム（８階）',c:'HOFSHGTG0001N'},
+      ]},
+      { name:'ファンタジーシャトー', rooms:[
+        {n:'ファンタジーシャトー ベイエリアサイド スーペリアルーム',c:'HOFSHBST0001N'},
+        {n:'ファンタジーシャトー ベイエリアサイド スーペリア・アルコーヴルーム',c:'HOFSHBSA0001N'},
+        {n:'ファンタジーシャトー ベイエリアサイド デラックスルーム',c:'HOFSHBDT0001N'},
+        {n:'ファンタジーシャトー ホテルエントランスサイド スーペリアルーム',c:'HOFSHHST0001N'},
+        {n:'ファンタジーシャトー ホテルエントランスサイド スーペリア・アルコーヴルーム',c:'HOFSHHSA0001N'},
+        {n:'ファンタジーシャトー ホテルエントランスサイド デラックスルーム',c:'HOFSHHDT0001N'},
+        {n:'ファンタジーシャトー ローズコートサイド スーペリアルーム',c:'HOFSHRST0001N'},
+        {n:'ファンタジーシャトー ローズコートサイド スーペリア・アルコーヴルーム',c:'HOFSHRSA0001N'},
+        {n:'ファンタジーシャトー ローズコートサイド デラックスルーム',c:'HOFSHRDT0001N'},
+        {n:'ファンタジーシャトー ローズコートサイド スーペリアルーム（パークビュー）',c:'HOFSHRPT0001N'},
+        {n:'ファンタジーシャトー ローズコートサイド スーペリア・アルコーヴルーム（パークビュー）',c:'HOFSHRPA0001N'},
+        {n:'ファンタジーシャトー スプリングスサイド デラックス・アルコーヴルーム（パーシャルビュー）',c:'HOFSHSEA0001N'},
+        {n:'ファンタジーシャトー スプリングスサイド デラックス・アルコーヴルーム（パークグランドビュー）',c:'HOFSHSGA0001N'},
+        {n:'ファンタジーシャトー スプリングスサイド デラックス・バルコニールーム（パークグランドビュー）',c:'HOFSHSBT0001N'},
+        {n:'ファンタジーシャトー スプリングスサイド デラックス・バルコニー＆アルコーヴルーム（パークグランドビュー）',c:'HOFSHSBA0001N'},
+      ]},
+    ]
+  },
+  {
+    code:'TDH', short:'ディズニー\nランドホテル', emoji:'🏯', color:'#1A5276',
+    name:'東京ディズニーランドホテル',
+    cats:[
+      { name:'スタンダード', rooms:[
+        {n:'スタンダード スーペリアルーム（３－４階）',c:'HOTDHSWN0001N'},
+        {n:'スタンダード スーペリアルーム（１－９階）',c:'HOTDHSTC0001N'},
+        {n:'スタンダード スーペリアルーム（パークビュー）（３－８階）',c:'HOTDHSPC0001N'},
+        {n:'スタンダード スーペリアルーム（パークグランドビュー）（５－７階）',c:'HOTDHGTC0001N'},
+        {n:'スタンダード スーペリアルーム（パークグランドビュー）（５－８階）',c:'HOTDHGWN0001N'},
+        {n:'スタンダード スーペリアアルコーヴルーム（１－９階）',c:'HOTDHSTA0001N'},
+        {n:'スタンダード スーペリアアルコーヴルーム（パークビュー）（３－８階）',c:'HOTDHSPA0001N'},
+        {n:'スタンダード スーペリアアルコーヴルーム（パークグランドビュー）（５－６階）',c:'HOTDHGAM0001N'},
+        {n:'スタンダード デラックスルーム（１－８階）',c:'HOTDHDOT0001N'},
+        {n:'スタンダード・デラックスルーム（４階）',c:'HOTDHDWH0001N'},
+        {n:'スタンダード デラックスルーム（３－４階）４名対応',c:'HOTDHDCN0001N'},
+        {n:'スタンダード・コーナールーム（３階）',c:'HOTDHCWL0002N'},
+        {n:'スタンダード コーナールーム（パークビュー）（３－８階）',c:'HOTDHCTC0001N'},
+        {n:'スタンダード ジュニアファミリールーム（１－３階）',c:'HOTDHJLL0002N'},
+        {n:'スタンダード ジュニアファミリールーム（パークビュー）（４－８階）',c:'HOTDHJPT0001N'},
+        {n:'スタンダード ファミリールーム（パークビュー）（５－９階）',c:'HOTDHFPT0001N'},
+      ]},
+      { name:'キャラクタールーム', rooms:[
+        {n:'ディズニー美女と野獣ルーム（１－９階）',c:'HOTDHBLC0001N'},
+        {n:'ディズニー美女と野獣ルーム（３－８階）',c:'HOTDHDTB0002N'},
+        {n:'ディズニー美女と野獣ルーム（５－９階）',c:'HOTDHDAB0002N'},
+        {n:'ディズニー美女と野獣ルーム（１－８階）',c:'HOTDHBTC0001N'},
+        {n:'ディズニーティンカーベルルーム（５－９階）',c:'HOTDHSOT0002N'},
+        {n:'ディズニーティンカーベルルーム（３－９階）',c:'HOTDHSAT0006N'},
+        {n:'ディズニーふしぎの国のアリスルーム（３－９階）',c:'HOTDHSCW0002N'},
+        {n:'ディズニーふしぎの国のアリスルーム（３－８階）',c:'HOTDHSAW0005N'},
+        {n:'ディズニーシンデレラルーム（５－７階）',c:'HOTDHCCC0002N'},
+      ]},
+      { name:'コンシェルジュ', rooms:[
+        {n:'コンシェルジュ スーペリアルーム（パークビュー）（３－８階）４名対応',c:'HOTDHRPC0001N'},
+        {n:'コンシェルジュ スーペリアルーム（パークグランドビュー）（８－９階）４名対応',c:'HOTDHRCS0003N'},
+        {n:'コンシェルジュ スーペリアアルコーヴルーム（パークグランドビュー）（７－９階）',c:'HOTDHRAS0004N'},
+        {n:'コンシェルジュ・バルコニールーム（パークグランドビュー）（８階）４名対応',c:'HOTDHRBC0001N'},
+        {n:'コンシェルジュ・バルコニーアルコーヴルーム（パークグランドビュー）（８階）',c:'HOTDHRBA0001N'},
+        {n:'コンシェルジュ タレットルーム（３－７階）',c:'HOTDHRTT0001N'},
+        {n:'コンシェルジュ タレットルーム（４－７階）',c:'HOTDHRTW0001N'},
+        {n:'コンシェルジュ デラックスルーム（パークビュー）（３－８階）',c:'HOTDHRDP0001N'},
+        {n:'コンシェルジュ・ディズニーシンデレラルーム（８－９階）',c:'HOTDHRCC0002N'},
+      ]},
+      { name:'スイート', rooms:[
+        {n:'ディズニー・マジックキングダム・スイート（８階）',c:'HOTDHRMC0003N'},
+        {n:'ディズニー・マジックキングダム・スイート（９階）',c:'HOTDHRMB0001N'},
+        {n:'ウォルト・ディズニー・スイート（９階）',c:'HOTDHRWD0001N'},
+      ]},
+    ]
+  },
+  {
+    code:'DAH', short:'アンバサ\nダーホテル', emoji:'⭐', color:'#922B21',
+    name:'ディズニーアンバサダーホテル',
+    cats:[
+      { name:'通常ルーム', rooms:[
+        {n:'スタンダードルーム（ツイン）',c:'HODAHSTT0005N'},
+        {n:'スタンダードルーム（ダブル）',c:'HODAHRDD0001N'},
+        {n:'スーペリアルーム（ツイン）',c:'HODAHPTT0005N'},
+        {n:'スーペリアルーム（ダブル）',c:'HODAHPDD0001N'},
+        {n:'スーペリアルーム（4名対応）',c:'HODAHPQT0005N'},
+        {n:'パームガーデンビュールーム（ツイン）',c:'HODAHGCT0001N'},
+        {n:'パームガーデンビュールーム（ダブル）',c:'HODAHGCD0001N'},
+        {n:'トリプルルーム',c:'HODAHTLL0005N'},
+        {n:'ジュニアファミリールーム',c:'HODAHJLQ0001N'},
+        {n:'ファミリールーム',c:'HODAHFCV0001N'},
+      ]},
+      { name:'キャラクタールーム', rooms:[
+        {n:'スティッチルーム',c:'HODAHSCT0005N'},
+        {n:'ドナルドダックルーム',c:'HODAHDQT0001N'},
+        {n:'ミッキーマウス・アクセシブルルーム（魔法使いの弟子）',c:'HODAHMMA0001N'},
+        {n:'ミッキーマウスルーム（魔法使いの弟子）',c:'HODAHMMQ0001N'},
+      ]},
+      { name:'スイート・プレミアム', rooms:[
+        {n:'ミッキーズ・プレミアルーム',c:'HODAHMPT0001N'},
+        {n:'ディズニーファンタジアルーム',c:'HODAHFDD0001N'},
+        {n:'ミッキーズ・ペントハウス・スイート',c:'HODAHMPU0001N'},
+      ]},
+      { name:'特別プランルーム', rooms:[
+        {n:'スーペリアルーム（チップとデールのプレイグラウンド）16:00グリーティング',c:'HODAH16P0001N'},
+        {n:'スーペリアルーム（チップとデールのプレイグラウンド）19:00グリーティング',c:'HODAH19P0001N'},
+        {n:'チップとデールルーム（チップとデールのプレイグラウンド）16:00グリーティング',c:'HODAH16C0001N'},
+        {n:'チップとデールルーム（チップとデールのプレイグラウンド）17:00グリーティング',c:'HODAH17C0001N'},
+        {n:'チップとデールルーム（チップとデールのプレイグラウンド）18:00グリーティング',c:'HODAH18C0001N'},
+        {n:'ミニーマウスルーム（パジャマパーティー）18:15グリーティング',c:'HODAH18N0001N'},
+        {n:'ミニーマウスルーム（パジャマパーティー）19:30グリーティング',c:'HODAH19N0001N'},
+        {n:'ミニーマウスルーム（パジャマパーティー）20:45グリーティング',c:'HODAH20N0001N'},
+      ]},
+    ]
+  },
+  {
+    code:'DHM', short:'ホテル\nミラコスタ', emoji:'🌊', color:'#1A7A6E',
+    name:'東京ディズニーシー・ホテルミラコスタ',
+    cats:[
+      { name:'スペチアーレ ポルト・パラディーゾ・サイド', rooms:[
+        {n:'スペチアーレ・ルーム＆スイート　ポルト・パラディーゾ・サイド テラスルーム ハーバーグランドビュー',c:'HODHMTGD0004N',battle:true},
+        {n:'スペチアーレ・ルーム＆スイート　ポルト・パラディーゾ・サイド テラスルーム ハーバービュー',c:'HODHMTKD0004N',battle:true},
+        {n:'スペチアーレ・ルーム＆スイート　ポルト・パラディーゾ・サイド テラスルーム ピアッツァビュー',c:'HODHMTOD0004N'},
+        {n:'スペチアーレ・ルーム＆スイート　ポルト・パラディーゾ・サイド バルコニールーム ハーバービュー',c:'HODHMBKT0004N',battle:true},
+        {n:'スペチアーレ・ルーム＆スイート　ポルト・パラディーゾ・サイド バルコニールーム ハーバービュー（４名対応）',c:'HODHMBKQ0004N',battle:true},
+        {n:'スペチアーレ・ルーム＆スイート　ポルト・パラディーゾ・サイド バルコニールーム ピアッツァビュー',c:'HODHMBOQ0004N'},
+        {n:'スペチアーレ・ルーム＆スイート　ポルト・パラディーゾ・サイド ハーバールーム ハーバービュー',c:'HODHMHKQ0005N'},
+        {n:'スペチアーレ・ルーム＆スイート　ポルト・パラディーゾ・サイド ハーバールーム ピアッツァビュー',c:'HODHMHOW0005N'},
+        {n:'スペチアーレ・ルーム＆スイート　ポルト・パラディーゾ・サイド スーペリアルーム ハーバービュー',c:'HODHMIKT0006N'},
+        {n:'スペチアーレ・ルーム＆スイート　ポルト・パラディーゾ・サイド スーペリアルーム ハーバービュー（４名対応）',c:'HODHMIKQ0006N'},
+        {n:'スペチアーレ・ルーム＆スイート　ポルト・パラディーゾ・サイド ポルト・パラディーゾ・スイート',c:'HODHMUOT0005N',top:true},
+        {n:'スペチアーレ・ルーム＆スイート　ポルト・パラディーゾ・サイド ミラコスタ・スイート',c:'HODHMMUT0006N',top:true},
+      ]},
+      { name:'スペチアーレ ヴェネツィア・サイド', rooms:[
+        {n:'スペチアーレ・ルーム＆スイート　ヴェネツィア・サイド テラスルーム',c:'HODHMTVD0005N',battle:true},
+        {n:'スペチアーレ・ルーム＆スイート　イル・マニーフィコ・スイート',c:'HODHMUIL0001N',top:true},
+      ]},
+      { name:'ポルト・パラディーゾ・サイド（スタンダード）', rooms:[
+        {n:'ポルト・パラディーゾ・サイド スーペリアルーム ハーバービュー',c:'HODHMKTT0005N'},
+        {n:'ポルト・パラディーゾ・サイド スーペリアルーム ハーバービュー（４名対応）',c:'HODHMKQT0005N'},
+        {n:'ポルト・パラディーゾ・サイド スーペリアルーム ピアッツァグランドビュー',c:'HODHMOTG0005N'},
+        {n:'ポルト・パラディーゾ・サイド スーペリアルーム ピアッツァグランドビュー（４名対応）',c:'HODHMOQG0005N'},
+        {n:'ポルト・パラディーゾ・サイド スーペリアルーム ピアッツァビュー',c:'HODHMODD0005N'},
+        {n:'ポルト・パラディーゾ・サイド スーペリアルーム ピアッツァビュー（４名対応）',c:'HODHMOQT0005N'},
+        {n:'ポルト・パラディーゾ・サイド スーペリアルーム パーシャルビュー',c:'HODHMETT0005N'},
+        {n:'ポルト・パラディーゾ・サイド トリプルルーム ピアッツァビュー',c:'HODHMOLL0005N'},
+      ]},
+      { name:'ヴェネツィア・サイド（スタンダード）', rooms:[
+        {n:'ヴェネツィア・サイド スーペリアルーム パラッツォ・カナルビュー',c:'HODHMVTG0001N'},
+        {n:'ヴェネツィア・サイド スーペリアルーム',c:'HODHMVDD0006N'},
+        {n:'ヴェネツィア・サイド バルコニールーム',c:'HODHMVQB0001N'},
+        {n:'ヴェネツィア・サイド パラッツォパティオルーム',c:'HODHMVQT0005N'},
+        {n:'ヴェネツィア・サイド トリプルルーム パラッツォ・カナルビュー',c:'HODHMVLG0001N'},
+        {n:'ヴェネツィア・サイド トリプルルーム',c:'HODHMVLL0005N'},
+      ]},
+      { name:'トスカーナ・サイド（カピターノ・ミッキー）', rooms:[
+        {n:'トスカーナ・サイド カピターノ・ミッキー・スーペリアルーム ディズニーシー・アクアスフィアビュー',c:'HODHMCTG0001N'},
+        {n:'トスカーナ・サイド カピターノ・ミッキー・スーペリアルーム（オープンタイプ）',c:'HODHMCAP0002N'},
+        {n:'トスカーナ・サイド カピターノ・ミッキー・スーペリアルーム',c:'HODHMCDP0005N'},
+        {n:'トスカーナ・サイド カピターノ・ミッキー・トリプルルーム ディズニーシー・アクアスフィアビュー',c:'HODHMCLG0001N'},
+        {n:'トスカーナ・サイド カピターノ・ミッキー・トリプルルーム',c:'HODHMCLP0005N'},
+      ]},
+    ]
+  },
+  {
+    code:'TSH', short:'トイ・ストー\nリーホテル', emoji:'🧸', color:'#1E6B3A',
+    name:'東京ディズニーリゾート・トイ・ストーリーホテル',
+    cats:[
+      { name:'スタンダード', rooms:[
+        {n:'スタンダードルーム',c:'HOTSHSQS0001N'},
+        {n:'スタンダードルーム パーシャルビュー',c:'HOTSHEQS0001N'},
+        {n:'スタンダードルーム ベイビュー',c:'HOTSHBQS0001N'},
+        {n:'スタンダードルーム スクエアビュー',c:'HOTSHTQS0001N'},
+      ]},
+      { name:'スーペリア', rooms:[
+        {n:'スーペリアルーム',c:'HOTSHSQR0001N'},
+        {n:'スーペリアルーム スクエアビュー',c:'HOTSHTQR0001N'},
+        {n:'スーペリア・アクセシブルルーム',c:'HOTSHSAR0001N'},
+      ]},
+    ]
+  },
+  {
+    code:'DCH', short:'セレブレー\nションホテル', emoji:'🎉', color:'#C0651A',
+    name:'東京ディズニーセレブレーションホテル',
+    cats:[
+      { name:'"ディスカバー"棟', rooms:[
+        {n:'"ディスカバー"スタンダードルーム',c:'HODCHDSS0001N'},
+        {n:'"ディスカバー"スタンダードルーム（ガーデンサイド）',c:'HODCHDSG0001N'},
+        {n:'"ディスカバー"スタンダードルーム（オーシャンサイド）',c:'HODCHDSO0001N'},
+        {n:'"ディスカバー"スーペリアルーム',c:'HODCHDRQ0001N'},
+        {n:'"ディスカバー"スタンダードルーム（2026年9月1日より）',c:'HODCHDNS0001N'},
+        {n:'"ディスカバー"スタンダードルーム（ガーデンサイド／2026年9月1日より）',c:'HODCHDNG0001N'},
+        {n:'"ディスカバー"トリプルルーム（2026年9月1日より）',c:'HODCHDNL0001N'},
+        {n:'"ディスカバー"スーペリアルーム（2026年9月1日より）',c:'HODCHDNQ0001N'},
+        {n:'"ディスカバー"クインテットルーム（2026年9月8日より）',c:'HODCHDN50001N'},
+        {n:'【外壁工事対象】"ディスカバー"（定員4名）',c:'HODCHZD40001N'},
+        {n:'【外壁工事対象】"ディスカバー"（定員4名／2026年9月1日より）',c:'HODCHZ4D0001N'},
+        {n:'【外壁工事対象】"ディスカバー"（定員3名／2026年9月1日より）',c:'HODCHZ3D0001N'},
+      ]},
+      { name:'"ウィッシュ"棟', rooms:[
+        {n:'"ウィッシュ"スタンダードルーム',c:'HODCHWSS0001N'},
+        {n:'"ウィッシュ"スタンダードルーム（ガーデンサイド）',c:'HODCHWSG0001N'},
+        {n:'"ウィッシュ"スタンダードルーム（オーシャンサイド）',c:'HODCHWSO0001N'},
+        {n:'"ウィッシュ"コーナールーム',c:'HODCHWCO0001N'},
+        {n:'"ウィッシュ"トリプルルーム',c:'HODCHWSL0001N'},
+        {n:'"ウィッシュ"スーペリアルーム',c:'HODCHWRR0001N'},
+      ]},
+    ]
+  },
+];
+
+let selIdx = 0;
+let cdTimer = null;
+
+function init() {
+  renderTabs();
+  selectHotel(0);
+  const t = new Date();
+  const ds = `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`;
+  document.getElementById('checkin-date').value = ds;
+  updateCountdown();
+  document.getElementById('checkin-date').addEventListener('change', updateCountdown);
+}
+
+function renderTabs() {
+  document.getElementById('hotel-tabs').innerHTML = HOTELS.map((h,i)=>{
+    const act = i===selIdx;
+    const st = act ? `background:${h.color};border-color:${h.color}` : '';
+    return `<button class="hotel-btn${act?' active':''}" style="${st}" onclick="selectHotel(${i})">
+      <span class="hem">${h.emoji}</span>${h.short.replace('\n','<br>')}
+      <span class="hcode">${h.code}</span></button>`;
+  }).join('');
+}
+
+function selectHotel(i) {
+  selIdx = i;
+  renderTabs();
+  const h = HOTELS[i];
+  let html = '';
+  h.cats.forEach(cat => {
+    html += `<div class="cat-title">${cat.name}</div>`;
+    cat.rooms.forEach((r,ri) => {
+      const id = `r_${i}_${ri}_${cat.name.slice(0,4)}`;
+      const bt = r.battle ? '<span class="tag-battle">激戦</span>' : '';
+      const tp = r.top ? '<span class="tag-top">最上位</span>' : '';
+      const nm = r.n.replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+      if (r.c) {
+        html += `<div class="room-item">
+          <input type="checkbox" id="${id}" data-code="${r.c}" data-name="${nm}">
+          <label for="${id}">${r.n}${bt}${tp}</label>
+          <span class="rcode">${r.c}</span></div>`;
+      } else {
+        html += `<div class="room-item">
+          <input type="checkbox" id="${id}" data-code="" data-name="${nm}">
+          <label for="${id}">${r.n}${bt}${tp}</label>
+          <input class="null-input" type="text" placeholder="部屋コードを入力" oninput="document.getElementById('${id}').dataset.code=this.value.trim()">
+          </div>`;
+      }
+    });
+  });
+  document.getElementById('room-list').innerHTML = html;
+}
+
+function selectAll() { document.querySelectorAll('#room-list input[type=checkbox]').forEach(c=>c.checked=true); }
+function clearAll()  { document.querySelectorAll('#room-list input[type=checkbox]').forEach(c=>c.checked=false); }
+
+function updateCountdown() {
+  const ds = document.getElementById('checkin-date').value;
+  const el = document.getElementById('countdown-inner');
+  if (cdTimer) { clearInterval(cdTimer); cdTimer=null; }
+  if (!ds) { el.innerHTML='<p class="msg">チェックイン日を入力してください</p>'; return; }
+  const [y,m,d] = ds.split('-').map(Number);
+  const unlock = new Date(y, m-1-4, d, 11, 0, 0);
+  const ciStr = `${y}年${m}月${d}日`;
+  const dow = '日月火水木金土';
+  const unlockStr = `${unlock.getFullYear()}年${unlock.getMonth()+1}月${unlock.getDate()}日（${dow[unlock.getDay()]}）11:00`;
+
+  function tick() {
+    const now = new Date();
+    const diff = unlock - now;
+    let h = `<div class="cd-date">解禁：${unlockStr}</div>
+      <div class="cd-tip">チェックイン ${ciStr} の4ヶ月前 ／ 10:59頃からタブ待機→11:00リロードが攻略法</div>`;
+    if (diff <= 0) {
+      h += `<div class="cd-unlocked">✓ 予約解禁済みです！今すぐ予約できます</div>`;
+    } else {
+      const days = Math.floor(diff/86400000);
+      const hrs  = Math.floor((diff%86400000)/3600000);
+      const mins = Math.floor((diff%3600000)/60000);
+      const secs = Math.floor((diff%60000)/1000);
+      const sc = diff < 86400000 ? ' cd-soon' : '';
+      h += `<div class="cd-units${sc}">
+        <div class="cd-unit"><span class="cd-val">${days}</span><span class="cd-lbl">日</span></div>
+        <div class="cd-sep">:</div>
+        <div class="cd-unit"><span class="cd-val">${String(hrs).padStart(2,'0')}</span><span class="cd-lbl">時間</span></div>
+        <div class="cd-sep">:</div>
+        <div class="cd-unit"><span class="cd-val">${String(mins).padStart(2,'0')}</span><span class="cd-lbl">分</span></div>
+        <div class="cd-sep">:</div>
+        <div class="cd-unit"><span class="cd-val">${String(secs).padStart(2,'0')}</span><span class="cd-lbl">秒</span></div>
+      </div>`;
+    }
+    el.innerHTML = h;
+  }
+  tick();
+  cdTimer = setInterval(tick, 1000);
+}
+
+function buildUrl(hotelCode, useDate, nights, adults, roomCode, roomName) {
+  const p = new URLSearchParams({
+    roomsNum:'1',adultNum:adults,stayingDays:nights,useDate,
+    searchHotelCD:hotelCode,showWay:'',cpListStr:'',childNum:'0',
+    childAgeBedInform:'',searchHotelDiv:'',hotelName:'',searchHotelName:'',
+    searchLayer:'',hotelSearchDetail:'true',detailOpenFlg:'0',
+    checkPointStr:'',hotelChangeFlg:'false',removeSessionFlg:'true',
+    returnFlg:'false',hotelShowFlg:'',displayType:'data-hotel',reservationStatus:'1',
+  });
+  if (roomName) p.set('searchRoomName', roomName);
+  if (roomCode) p.set('hotelRoomCd', roomCode);
+  let url = `https://reserve.tokyodisneyresort.jp/hotel/list/?${p.toString()}`;
+  if (roomCode) url += `#section_${roomCode}`;
+  return url;
+}
+
+function generateUrls() {
+  const ds = document.getElementById('checkin-date').value;
+  if (!ds) { alert('チェックイン日を選択してください'); return; }
+  const nights = document.getElementById('nights').value;
+  const adults = document.getElementById('adults').value;
+  const useDate = ds.replace(/-/g,'');
+  const hotel = HOTELS[selIdx];
+  const checked = [...document.querySelectorAll('#room-list input[type=checkbox]:checked')];
+  const card = document.getElementById('results-card');
+  const out  = document.getElementById('url-results');
+
+  const entries = checked.length === 0
+    ? [{label:`${hotel.name}（全部屋表示）`, code:'', name:''}]
+    : checked.map(cb => ({label:cb.dataset.name, code:cb.dataset.code, name:cb.dataset.name}));
+
+  out.innerHTML = entries.map((e,i) => {
+    const url = buildUrl(hotel.code, useDate, nights, adults, e.code, e.name);
+    return `<div class="url-result">
+      <div class="url-rname">${escH(e.label)}</div>
+      <div class="url-text">${escH(url)}</div>
+      <div class="url-acts">
+        <button class="btn-copy" id="cb_${i}" onclick="cpUrl(${i})">コピー</button>
+        <button class="btn-open" onclick="window.open(urls[${i}],'_blank')">予約ページを開く →</button>
+      </div></div>`;
+  }).join('');
+
+  window.urls = entries.map(e => buildUrl(hotel.code, useDate, nights, adults, e.code, e.name));
+  card.style.display = 'block';
+  setTimeout(() => card.scrollIntoView({behavior:'smooth', block:'start'}), 50);
+}
+
+function cpUrl(i) {
+  navigator.clipboard.writeText(window.urls[i]).then(() => {
+    const btn = document.getElementById(`cb_${i}`);
+    btn.textContent = 'コピー済！'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent='コピー'; btn.classList.remove('copied'); }, 1800);
+  });
+}
+
+function escH(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+init();
+</script>
+</body>
+</html>
