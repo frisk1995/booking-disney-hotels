@@ -72,6 +72,12 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 .msg{text-align:center;color:var(--muted);font-size:.88rem;padding:1.8rem}
 .tag-battle{display:inline-block;font-size:.58rem;background:#FDE8D8;color:#B85A00;border:1px solid #F5C6A0;border-radius:3px;padding:.05rem .28rem;margin-left:.3rem;vertical-align:middle;font-weight:700}
 .tag-top{display:inline-block;font-size:.58rem;background:#D8EAF8;color:#1A5276;border:1px solid #A9CCE3;border-radius:3px;padding:.05rem .28rem;margin-left:.3rem;vertical-align:middle;font-weight:700}
+.cat-tabs{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.85rem;padding-bottom:.7rem;border-bottom:1px solid var(--border)}
+.cat-tab{padding:.32rem .75rem;font-size:.74rem;border:1.5px solid var(--border);border-radius:20px;cursor:pointer;background:#fff;color:var(--muted);font-family:'Noto Sans JP',sans-serif;transition:all .15s;white-space:nowrap;display:inline-flex;align-items:center;gap:.3rem}
+.cat-tab:hover{border-color:var(--navy);color:var(--navy)}
+.cat-tab.active{background:var(--navy);border-color:var(--navy);color:#fff}
+.cat-badge{display:inline-block;background:var(--gold);color:#fff;border-radius:10px;font-size:.58rem;padding:.05rem .35rem;font-weight:700;line-height:1.4}
+.cat-tab.active .cat-badge{background:rgba(255,255,255,.3)}
 </style>
 </head>
 <body>
@@ -361,6 +367,8 @@ const HOTELS = [
 ];
 
 let selIdx = 0;
+let selCatIdx = 0;
+let selCodes = new Set();
 let cdTimer = null;
 
 function init() {
@@ -386,35 +394,85 @@ function renderTabs() {
 
 function selectHotel(i) {
   selIdx = i;
+  selCatIdx = 0;
+  selCodes = new Set();
   renderTabs();
-  const h = HOTELS[i];
-  let html = '';
-  h.cats.forEach(cat => {
-    html += `<div class="cat-title">${cat.name}</div>`;
-    cat.rooms.forEach((r,ri) => {
-      const id = `r_${i}_${ri}_${cat.name.slice(0,4)}`;
-      const bt = r.battle ? '<span class="tag-battle">激戦</span>' : '';
-      const tp = r.top ? '<span class="tag-top">最上位</span>' : '';
-      const nm = r.n.replace(/&/g,'&amp;').replace(/"/g,'&quot;');
-      if (r.c) {
-        html += `<div class="room-item">
-          <input type="checkbox" id="${id}" data-code="${r.c}" data-name="${nm}">
-          <label for="${id}">${r.n}${bt}${tp}</label>
-          <span class="rcode">${r.c}</span></div>`;
-      } else {
-        html += `<div class="room-item">
-          <input type="checkbox" id="${id}" data-code="" data-name="${nm}">
-          <label for="${id}">${r.n}${bt}${tp}</label>
-          <input class="null-input" type="text" placeholder="部屋コードを入力" oninput="document.getElementById('${id}').dataset.code=this.value.trim()">
-          </div>`;
-      }
-    });
+  renderRooms();
+}
+
+function selectCat(i) {
+  selCatIdx = i;
+  renderRooms();
+}
+
+function renderRooms() {
+  const h = HOTELS[selIdx];
+  const cats = h.cats;
+  let html = `<div class="cat-tabs">`;
+  cats.forEach((cat, ci) => {
+    const cnt = cat.rooms.filter(r => r.c && selCodes.has(r.c)).length;
+    const badge = cnt > 0 ? `<span class="cat-badge">${cnt}</span>` : '';
+    html += `<button class="cat-tab${ci===selCatIdx?' active':''}" onclick="selectCat(${ci})">${cat.name}${badge}</button>`;
+  });
+  html += `</div>`;
+  const cat = cats[selCatIdx];
+  cat.rooms.forEach((r, ri) => {
+    const id = `r_${selIdx}_${selCatIdx}_${ri}`;
+    const bt = r.battle ? '<span class="tag-battle">激戦</span>' : '';
+    const tp = r.top ? '<span class="tag-top">最上位</span>' : '';
+    const nm = r.n.replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+    if (r.c) {
+      const chk = selCodes.has(r.c) ? ' checked' : '';
+      html += `<div class="room-item">
+        <input type="checkbox" id="${id}" data-code="${r.c}" data-name="${nm}"${chk} onchange="toggleRoom(this)">
+        <label for="${id}">${r.n}${bt}${tp}</label>
+        <span class="rcode">${r.c}</span></div>`;
+    } else {
+      html += `<div class="room-item">
+        <input type="checkbox" id="${id}" data-code="" data-name="${nm}">
+        <label for="${id}">${r.n}${bt}${tp}</label>
+        <input class="null-input" type="text" placeholder="部屋コードを入力" oninput="document.getElementById('${id}').dataset.code=this.value.trim()">
+        </div>`;
+    }
   });
   document.getElementById('room-list').innerHTML = html;
 }
 
-function selectAll() { document.querySelectorAll('#room-list input[type=checkbox]').forEach(c=>c.checked=true); }
-function clearAll()  { document.querySelectorAll('#room-list input[type=checkbox]').forEach(c=>c.checked=false); }
+function toggleRoom(cb) {
+  if (cb.checked) selCodes.add(cb.dataset.code);
+  else selCodes.delete(cb.dataset.code);
+  updateCatBadges();
+}
+
+function updateCatBadges() {
+  const h = HOTELS[selIdx];
+  document.querySelectorAll('.cat-tab').forEach((btn, i) => {
+    if (i >= h.cats.length) return;
+    const cnt = h.cats[i].rooms.filter(r => r.c && selCodes.has(r.c)).length;
+    const badge = btn.querySelector('.cat-badge');
+    if (cnt > 0) {
+      if (badge) badge.textContent = cnt;
+      else btn.insertAdjacentHTML('beforeend', `<span class="cat-badge">${cnt}</span>`);
+    } else {
+      if (badge) badge.remove();
+    }
+  });
+}
+
+function selectAll() {
+  document.querySelectorAll('#room-list input[type=checkbox]').forEach(c => {
+    c.checked = true;
+    if (c.dataset.code) selCodes.add(c.dataset.code);
+  });
+  updateCatBadges();
+}
+function clearAll() {
+  document.querySelectorAll('#room-list input[type=checkbox]').forEach(c => {
+    c.checked = false;
+    if (c.dataset.code) selCodes.delete(c.dataset.code);
+  });
+  updateCatBadges();
+}
 
 function updateCountdown() {
   const ds = document.getElementById('checkin-date').value;
@@ -479,13 +537,18 @@ function generateUrls() {
   const adults = document.getElementById('adults').value;
   const useDate = ds.replace(/-/g,'');
   const hotel = HOTELS[selIdx];
-  const checked = [...document.querySelectorAll('#room-list input[type=checkbox]:checked')];
   const card = document.getElementById('results-card');
   const out  = document.getElementById('url-results');
 
-  const entries = checked.length === 0
+  const allRooms = hotel.cats.flatMap(cat => cat.rooms);
+  const codeEntries = allRooms.filter(r => r.c && selCodes.has(r.c))
+    .map(r => ({label: r.n, code: r.c, name: r.n}));
+  const domNullEntries = [...document.querySelectorAll('#room-list input[type=checkbox]:checked')]
+    .filter(cb => cb.dataset.code && !selCodes.has(cb.dataset.code))
+    .map(cb => ({label: cb.dataset.name, code: cb.dataset.code, name: cb.dataset.name}));
+  const entries = (codeEntries.length + domNullEntries.length) === 0
     ? [{label:`${hotel.name}（全部屋表示）`, code:'', name:''}]
-    : checked.map(cb => ({label:cb.dataset.name, code:cb.dataset.code, name:cb.dataset.name}));
+    : [...codeEntries, ...domNullEntries];
 
   out.innerHTML = entries.map((e,i) => {
     const url = buildUrl(hotel.code, useDate, nights, adults, e.code, e.name);
