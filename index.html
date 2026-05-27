@@ -367,6 +367,7 @@ function init() {
   renderTabs();
   selectHotel(0);
   const t = new Date();
+  t.setMonth(t.getMonth() + 4);
   const ds = `${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`;
   document.getElementById('checkin-date').value = ds;
   updateCountdown();
